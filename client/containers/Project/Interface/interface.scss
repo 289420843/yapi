@@ -277,7 +277,7 @@
 }
 
 .common-setting-modal{
-  
+
   .setting-item{
     margin: 10px;
     line-height: 35px;
@@ -294,5 +294,10 @@
 
   .insert-code{
     padding-top: 45px;
+  }
+}
+.json-schema-react-editor {
+  .icon-object{
+    font-size: 14px !important;
   }
 }
