@@ -4,7 +4,12 @@
   @include row-width-limit;
   margin: 0 auto .24rem;
 }
-.news-box .news-timeline .ant-timeline-item .ant-timeline-item-content{
+
+.news-box .news-timeline .ant-timeline-item .ant-timeline-item-content {
   min-width: 300px !important;
   width: 75% !important;
+}
+
+.ant-menu-inline .ant-menu-item, .ant-menu-inline .ant-menu-submenu-title {
+  width: calc(100%) !important;
 }
