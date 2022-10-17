@@ -1334,14 +1334,16 @@ class InterfaceEditForm extends Component {
           >
             {/* <Button type="primary" htmlType="submit">保存1</Button> */}
             <Affix offsetBottom={0}>
-              <Button
-                className="interface-edit-submit-button"
-                disabled={this.state.submitStatus}
-                size="large"
-                htmlType="submit"
-              >
-                保存
-              </Button>
+              <div className="buttons">
+                <Button
+                  className="interface-edit-submit-button"
+                  disabled={this.state.submitStatus}
+                  size="large"
+                  htmlType="submit"
+                >
+                  保存
+                </Button>
+              </div>
             </Affix>
           </FormItem>
         </Form>
