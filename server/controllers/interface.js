@@ -19,10 +19,9 @@ const path = require('path');
 // const annotatedCss = require("jsondiffpatch/public/formatters-styles/annotated.css");
 // const htmlCss = require("jsondiffpatch/public/formatters-styles/html.css");
 
-
-function handleHeaders(values){
+function handleHeaders(values) {
   let isfile = false,
-  isHaveContentType = false;
+    isHaveContentType = false;
   if (values.req_body_type === 'form') {
     values.req_body_form.forEach(item => {
       if (item.type === 'file') {
@@ -60,7 +59,6 @@ function handleHeaders(values){
     }
   }
 }
-
 
 class interfaceController extends baseController {
   constructor(ctx) {
@@ -126,7 +124,12 @@ class interfaceController extends baseController {
       req_body_is_json_schema: 'string',
       res_body_is_json_schema: 'string',
       markdown: 'string',
-      tag: 'array'
+      tag: 'array',
+      swag_setting: {
+        json_url: 'string',
+        path: 'string',
+        method: 'string'
+      }
     };
 
     this.schemaMap = {
@@ -227,7 +230,7 @@ class interfaceController extends baseController {
       ));
     }
 
-    handleHeaders(params)
+    handleHeaders(params);
 
     params.query_path = {};
     params.query_path.path = http_path.pathname;
@@ -351,24 +354,33 @@ class interfaceController extends baseController {
       ));
     }
 
-    let result = await this.Model.getByPath(params.project_id, params.path, params.method, '_id res_body');
+    let result = await this.Model.getByPath(
+      params.project_id,
+      params.path,
+      params.method,
+      '_id res_body'
+    );
 
     if (result.length > 0) {
       result.forEach(async item => {
         params.id = item._id;
         // console.log(this.schemaMap['up'])
-        let validParams = Object.assign({}, params)
+        let validParams = Object.assign({}, params);
         let validResult = yapi.commons.validateParams(this.schemaMap['up'], validParams);
         if (validResult.valid) {
           let data = Object.assign({}, ctx);
           data.params = validParams;
 
-          if(params.res_body_is_json_schema && params.dataSync === 'good'){
-            try{
-              let new_res_body = yapi.commons.json_parse(params.res_body)
-              let old_res_body = yapi.commons.json_parse(item.res_body)
-              data.params.res_body = JSON.stringify(mergeJsonSchema(old_res_body, new_res_body),null,2);
-            }catch(err){}
+          if (params.res_body_is_json_schema && params.dataSync === 'good') {
+            try {
+              let new_res_body = yapi.commons.json_parse(params.res_body);
+              let old_res_body = yapi.commons.json_parse(item.res_body);
+              data.params.res_body = JSON.stringify(
+                mergeJsonSchema(old_res_body, new_res_body),
+                null,
+                2
+              );
+            } catch (err) {}
           }
           await this.up(data);
         } else {
@@ -398,9 +410,12 @@ class interfaceController extends baseController {
       let needUpdate = false;
       if (tagsInProject && Array.isArray(tagsInProject) && tagsInProject.length > 0) {
         tags.forEach(tag => {
-          if (!_.find(tagsInProject, item => {
-            return item.name === tag;
-          })) {//tag不存在
+          if (
+            !_.find(tagsInProject, item => {
+              return item.name === tag;
+            })
+          ) {
+            //tag不存在
             needUpdate = true;
             tagsInProject.push({
               name: tag,
@@ -409,8 +424,8 @@ class interfaceController extends baseController {
           }
         });
       } else {
-        needUpdate = true
-        tagsInProject = []
+        needUpdate = true;
+        tagsInProject = [];
         tags.forEach(tag => {
           tagsInProject.push({
             name: tag,
@@ -418,7 +433,8 @@ class interfaceController extends baseController {
           });
         });
       }
-      if (needUpdate) {//需要更新tag
+      if (needUpdate) {
+        //需要更新tag
         let data = {
           tag: tagsInProject,
           up_time: yapi.commons.time()
@@ -446,9 +462,9 @@ class interfaceController extends baseController {
 
     try {
       let result = await this.Model.get(params.id);
-      if(this.$tokenAuth){
-        if(params.project_id !== result.project_id){
-          ctx.body = yapi.commons.resReturn(null, 400, 'token有误')
+      if (this.$tokenAuth) {
+        if (params.project_id !== result.project_id) {
+          ctx.body = yapi.commons.resReturn(null, 400, 'token有误');
           return;
         }
       }
@@ -509,19 +525,19 @@ class interfaceController extends baseController {
       let result, count;
       if (limit === 'all') {
         result = await this.Model.list(project_id);
-        count = await this.Model.listCount({project_id});
+        count = await this.Model.listCount({ project_id });
       } else {
-        let option = {project_id};
+        let option = { project_id };
         if (status) {
           if (Array.isArray(status)) {
-            option.status = {"$in": status};
+            option.status = { $in: status };
           } else {
             option.status = status;
           }
         }
         if (tag) {
           if (Array.isArray(tag)) {
-            option.tag = {"$in": tag};
+            option.tag = { $in: tag };
           } else {
             option.tag = tag;
           }
@@ -530,7 +546,6 @@ class interfaceController extends baseController {
         result = await this.Model.listByOptionWithPage(option, page, limit);
         count = await this.Model.listCount(option);
       }
-
 
       ctx.body = yapi.commons.resReturn({
         count: count,
@@ -573,18 +588,17 @@ class interfaceController extends baseController {
         }
       }
 
-
-      let option = {catid}
+      let option = { catid };
       if (status) {
         if (Array.isArray(status)) {
-          option.status = {"$in": status};
+          option.status = { $in: status };
         } else {
           option.status = status;
         }
       }
       if (tag) {
         if (Array.isArray(tag)) {
-          option.tag = {"$in": tag};
+          option.tag = { $in: tag };
         } else {
           option.tag = tag;
         }
@@ -662,12 +676,12 @@ class interfaceController extends baseController {
    * @param {String}  [res_body_type] 相应信息的数据格式，有["json", "text", "xml"]三种
    * @param {String} [res_body] 响应信息，可填写任意字符串，如果res_body_type是json,则会调用mock功能
    * @param  {String} [desc] 接口描述
+   * @param  {Object} [swag_setting] swagger配置 用于导入
    * @returns {Object}
    * @example ./api/interface/up.json
    */
   async up(ctx) {
     let params = ctx.params;
-
     if (!_.isUndefined(params.method)) {
       params.method = params.method || 'GET';
       params.method = params.method.toUpperCase();
@@ -679,7 +693,7 @@ class interfaceController extends baseController {
     // params.res_body_is_json_schema = _.isUndefined (params.res_body_is_json_schema) ? true : params.res_body_is_json_schema;
     // params.req_body_is_json_schema = _.isUndefined(params.req_body_is_json_schema) ?  true : params.req_body_is_json_schema;
 
-    handleHeaders(params)
+    handleHeaders(params);
 
     let interfaceData = await this.Model.get(id);
     if (!interfaceData) {
@@ -748,6 +762,7 @@ class interfaceController extends baseController {
         data.req_params = [];
       }
     }
+    data.swag_setting = params.swag_setting;
     let result = await this.Model.up(id, data);
     let username = this.getUsername();
     let CurrentInterfaceData = await this.Model.get(id);
@@ -761,7 +776,7 @@ class interfaceController extends baseController {
     this.catModel.get(interfaceData.catid).then(cate => {
       let diffView2 = showDiffMsg(jsondiffpatch, formattersHtml, logData);
       if (diffView2.length <= 0) {
-          return; // 没有变化时，不写日志
+        return; // 没有变化时，不写日志
       }
       yapi.commons.saveLog({
         content: `<a href="/user/profile/${this.getUid()}">${username}</a> 
@@ -796,9 +811,7 @@ class interfaceController extends baseController {
 
       let project = await this.projectModel.getBaseInfo(interfaceData.project_id);
 
-      let interfaceUrl = `${ctx.request.origin}/project/${
-        interfaceData.project_id
-      }/interface/api/${id}`;
+      let interfaceUrl = `${ctx.request.origin}/project/${interfaceData.project_id}/interface/api/${id}`;
 
       yapi.commons.sendNotice(interfaceData.project_id, {
         title: `${username} 更新了接口`,

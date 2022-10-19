@@ -10,8 +10,8 @@ const mockServer = require('./middleware/mockServer.js');
 require('./plugin.js');
 const websockify = require('koa-websocket');
 const websocket = require('./websocket.js');
-const storageCreator = require('./utils/storage')
-require('./utils/notice')
+const storageCreator = require('./utils/storage');
+require('./utils/notice');
 
 const Koa = require('koa');
 const koaStatic = require('koa-static');
@@ -27,7 +27,9 @@ app.proxy = true;
 yapi.app = app;
 
 // app.use(bodyParser({multipart: true}));
-app.use(koaBody({strict: false, multipart: true, jsonLimit: '2mb', formLimit: '1mb', textLimit: '1mb' }));
+app.use(
+  koaBody({ strict: false, multipart: true, jsonLimit: '2mb', formLimit: '1mb', textLimit: '1mb' })
+);
 app.use(mockServer);
 app.use(router.routes());
 app.use(router.allowedMethods());
@@ -54,9 +56,7 @@ app.use(async (ctx, next) => {
   await next();
 });
 
-
 app.use(koaStatic(yapi.path.join(yapi.WEBROOT, 'static'), { index: indexFile, gzip: true }));
-
 
 const server = app.listen(yapi.WEBCONFIG.port);
 

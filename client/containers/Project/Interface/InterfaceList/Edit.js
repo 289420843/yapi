@@ -187,7 +187,7 @@ class InterfaceEdit extends Component {
   render() {
     const { cat, basepath, switch_notice, tag } = this.props.currProject;
     return (
-      <div className="interface-edit">
+      <div className='interface-edit'>
         {this.state.status === 1 ? (
           <InterfaceEditForm
             cat={cat}
@@ -210,14 +210,14 @@ class InterfaceEdit extends Component {
         {this.state.status === 0 && '正在加载，请耐心等待...'}
 
         <Modal
-          title="Tag 设置"
+          title='Tag 设置'
           width={680}
           visible={this.state.visible}
           onOk={this.handleOk}
           onCancel={this.handleCancel}
-          okText="保存"
+          okText='保存'
         >
-          <div className="tag-modal-center">
+          <div className='tag-modal-center'>
             <ProjectTag tagMsg={tag} ref={this.tagSubmit} />
           </div>
         </Modal>

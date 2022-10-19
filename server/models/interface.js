@@ -94,7 +94,12 @@ class interfaceModel extends baseModel {
       field3: String,
       api_opened: { type: Boolean, default: false },
       index: { type: Number, default: 0 },
-      tag: Array
+      tag: Array,
+      swag_setting: {
+        json_url: String,
+        path: String,
+        method: String
+      }
     };
   }
 
@@ -213,7 +218,8 @@ class interfaceModel extends baseModel {
 
   listByCatid(catid, select) {
     select =
-      select || '_id title uid path method project_id catid edit_uid status add_time up_time index tag';
+      select ||
+      '_id title uid path method project_id catid edit_uid status add_time up_time index tag';
     return this.model
       .find({
         catid: catid
@@ -244,7 +250,7 @@ class interfaceModel extends baseModel {
     limit = parseInt(limit);
     return this.model
       .find(option)
-      .sort({index: 1})
+      .sort({ index: 1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .select(
@@ -265,11 +271,7 @@ class interfaceModel extends baseModel {
         catid: catid
       };
     }
-    return this.model
-      .find(option)
-      .select()
-      .sort({ title: 1 })
-      .exec();
+    return this.model.find(option).select().sort({ title: 1 }).exec();
   }
 
   del(id) {
@@ -340,10 +342,7 @@ class interfaceModel extends baseModel {
   search(keyword) {
     return this.model
       .find({
-        $or: [
-          { 'title': new RegExp(keyword, 'ig') },
-          { 'path': new RegExp(keyword, 'ig') }
-        ]
+        $or: [{ title: new RegExp(keyword, 'ig') }, { path: new RegExp(keyword, 'ig') }]
       })
       .limit(10);
   }
